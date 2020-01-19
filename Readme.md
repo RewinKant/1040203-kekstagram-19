@@ -1,7 +1,7 @@
 # Личный проект «Кекстаграм» [![Build status][travis-image]][travis-url]
 
 * Студент: [Evgenii Kovalenko](https://up.htmlacademy.ru/javascript/19/user/1040203).
-* Наставник: `Неизвестно`.
+* Наставник: [Евгений Суглобов](https://htmlacademy.ru/profile/id1133747).
 
 ---
 
