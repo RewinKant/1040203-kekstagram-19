@@ -25,7 +25,7 @@ function includeRandomInt(min, max) {
   return Math.floor(r);
 }
 
-function includeComments(numCommets, comments) {
+function createComments(numCommets, comments) {
   var massiveComments = [];
   var comment = {};
   for (var i = 0; i < numCommets - 1; i++) {
@@ -47,17 +47,43 @@ function createPhoto(countPhotos, comments) {
       url: 'photos/' + i + '.jpg',
       description: '',
       likes: includeRandomInt(15, 200),
-      comments: includeComments(includeRandomInt(1, 10), comments)
+      comments: createComments(includeRandomInt(1, 10), comments)
     };
     massivePhotos.push(photo);
   }
   return massivePhotos;
 }
 
+function includeComments(comments) {
+  var massComments = document.createDocumentFragment();
+  for (var j = 0; j < comments.length; j++) {
+    var comment = document.createElement('li');
+    comment.classList.add('social__comment');
+
+    var avatar = document.createElement('img');
+    avatar.classList.add('social__picture');
+    avatar.src = comments[j].avatar;
+    avatar.alt = comments[j].name;
+    avatar.width = 35;
+    avatar.height = 35;
+    comment.appendChild(avatar);
+
+    var p = document.createElement('p');
+    p.classList.add('social__text');
+    p.textContent = comments[j].message;
+    comment.appendChild(p);
+
+    massComments.appendChild(comment);
+  }
+  return massComments;
+}
+
 var sectionPictures = document.querySelector('.pictures');
 var templatePicture = document.querySelector('#picture').content.querySelector('a');
-
 var massivePhotos = createPhoto(COUNT_PHOTOS, COMMENTS);
+
+var bigPicture = document.querySelector('.big-picture');
+var commentsListPicture = bigPicture.querySelector('.social__comments');
 
 var pictureFragment = document.createDocumentFragment();
 for (var i = 0; i < massivePhotos.length; i++) {
@@ -67,5 +93,14 @@ for (var i = 0; i < massivePhotos.length; i++) {
   element.querySelector('.picture__comments').textContent = massivePhotos[i].comments.length;
   pictureFragment.appendChild(element);
 }
-
 sectionPictures.appendChild(pictureFragment);
+
+bigPicture.classList.remove('hidden');
+bigPicture.querySelector('.social__comment-count').classList.add('hidden');
+bigPicture.querySelector('.comments-loader').classList.add('hidden');
+// по заданию для первого элемента
+bigPicture.querySelector('.big-picture__img').querySelector('img').src = massivePhotos[1].url;
+bigPicture.querySelector('.likes-count').textContent = massivePhotos[1].likes;
+bigPicture.querySelector('.comments-count').textContent = massivePhotos[1].comments.length;
+bigPicture.querySelector('.social__caption').textContent = massivePhotos[1].description;
+commentsListPicture.appendChild(includeComments(massivePhotos[1].comments));
