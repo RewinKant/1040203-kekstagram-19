@@ -15,6 +15,7 @@
     var effectBar = uploadForm.querySelector('.img-upload__effect-level');
     var buttonCloseChangeImg = uploadForm.querySelector('#upload-cancel');
     var hashtags = uploadForm.querySelector('.text__hashtags');
+    var effectLevelPin = uploadForm.querySelector('.effect-level__pin');
 
     evt.preventDefault(); // ВРЕМЕННО Функционал загрузки изображения от пользователя
     body.classList.add('modal-open');
@@ -25,6 +26,7 @@
     buttonCloseChangeImg.addEventListener('click', onCloseImgChangeForm);
     document.addEventListener('keydown', onKeydownCloseImgChangeForm);
     hashtags.addEventListener('focusout', onInputHashtagsChange);
+    effectLevelPin.addEventListener('mousedown', onClickTagleImgChangeForm);
 
     // effectLevelPin.addEventListener('mouseup', );
   }
@@ -71,8 +73,12 @@
       window.dom.change.radioEffectValue(evt);
     }
     if (evt.target.matches('.effect-level__value')) {
-      mainPic.style.filter = window.helpFun.setFilterValue(evt.target.value, window.dom.variable.typeEffect);
+      mainPic.style.filter = window.helpFun.setFilterValue(evt.target.value, window.variable.typeEffect);
     }
+  }
+
+  function onClickTagleImgChangeForm(evt) {
+    window.dom.change.imgEffectValue(evt);
   }
 
   window.on = {
