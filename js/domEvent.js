@@ -25,7 +25,7 @@
     // А так же /main.js - uploadFile.addEventListener('focus', function ())
     evt.preventDefault();
     // var imgUploadPreview = uploadForm.querySelector('.img-upload__preview').querySelector('img');
-    // var fileList = this.files
+    // var fileList = evt.target.files;
     // imgUploadPreview.file = fileList[0];
     // imgUploadPreview.src = window.URL.createObjectURL(fileList[0]);
     // imgUploadPreview.onload = function () {
