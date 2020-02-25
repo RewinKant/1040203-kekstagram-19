@@ -2,9 +2,12 @@
 
 (function () {
   function onOpenBigPicture(evt) {
+    var bigPicture = document.querySelector('.big-picture');
+    var closeButton = bigPicture.querySelector('#picture-cancel');
     if (evt.target && evt.target.closest('.picture__img')) {
       window.dom.change.bigPicture(evt);
-      document.addEventListener('click', onCloseBigPicture);
+      closeButton.addEventListener('click', onCloseBigPicture);
+      document.addEventListener('keydown', onKeydownCloseBigPicture);
     }
   }
 
@@ -16,8 +19,18 @@
     var buttonCloseChangeImg = uploadForm.querySelector('#upload-cancel');
     var hashtags = uploadForm.querySelector('.text__hashtags');
     var effectLevelPin = uploadForm.querySelector('.effect-level__pin');
-
-    evt.preventDefault(); // ВРЕМЕННО Функционал загрузки изображения от пользователя
+    // ВРЕМЕННО Функционал загрузки изображения от пользователя ОТКЛЮЧЕН
+    // В связи с тестированием данной формы
+    // При проверке ВЫПОЛНИТЬ ОБРАТНОЕ КОММЕНТИРОВАНИЕ
+    // А так же /main.js - uploadFile.addEventListener('focus', function ())
+    evt.preventDefault();
+    // var imgUploadPreview = uploadForm.querySelector('.img-upload__preview').querySelector('img');
+    // var fileList = this.files
+    // imgUploadPreview.file = fileList[0];
+    // imgUploadPreview.src = window.URL.createObjectURL(fileList[0]);
+    // imgUploadPreview.onload = function () {
+    //   window.URL.revokeObjectURL(this.src);
+    // };
     body.classList.add('modal-open');
     imgChangeForm.classList.remove('hidden');
     effectBar.classList.add('hidden');
@@ -27,8 +40,6 @@
     document.addEventListener('keydown', onKeydownCloseImgChangeForm);
     hashtags.addEventListener('focusout', onInputHashtagsChange);
     effectLevelPin.addEventListener('mousedown', onClickTagleImgChangeForm);
-
-    // effectLevelPin.addEventListener('mouseup', );
   }
 
   function onCloseBigPicture() {
@@ -37,6 +48,7 @@
 
     bigPicture.classList.add('hidden');
     closeButton.removeEventListener('click', onCloseBigPicture);
+    document.removeEventListener('keydown', onKeydownCloseBigPicture);
   }
 
   function onCloseImgChangeForm() {
@@ -58,6 +70,12 @@
   function onKeydownCloseImgChangeForm(evt) {
     if (evt.keyCode === 27) {
       onCloseImgChangeForm();
+    }
+  }
+
+  function onKeydownCloseBigPicture(evt) {
+    if (evt.keyCode === 27) {
+      onCloseBigPicture();
     }
   }
 
