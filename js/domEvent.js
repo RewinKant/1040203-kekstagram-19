@@ -19,6 +19,9 @@
     var buttonCloseChangeImg = uploadForm.querySelector('#upload-cancel');
     var hashtags = uploadForm.querySelector('.text__hashtags');
     var effectLevelPin = uploadForm.querySelector('.effect-level__pin');
+    var buttonClickUpScale = uploadForm.querySelector('.scale__control--bigger');
+    var buttonClickDownScale = uploadForm.querySelector('.scale__control--smaller');
+
     // ВРЕМЕННО Функционал загрузки изображения от пользователя ОТКЛЮЧЕН
     // В связи с тестированием данной формы
     // При проверке ВЫПОЛНИТЬ ОБРАТНОЕ КОММЕНТИРОВАНИЕ
@@ -40,6 +43,8 @@
     document.addEventListener('keydown', onKeydownCloseImgChangeForm);
     hashtags.addEventListener('focusout', onInputHashtagsChange);
     effectLevelPin.addEventListener('mousedown', onClickTagleImgChangeForm);
+    buttonClickUpScale.addEventListener('click', onUpScale);
+    buttonClickDownScale.addEventListener('click', onDownScale);
   }
 
   function onCloseBigPicture() {
@@ -81,6 +86,32 @@
 
   function onInputHashtagsChange(evt) {
     window.validation.hashtagInput(evt);
+  }
+
+  function onUpScale() {
+    var uploadForm = document.querySelector('#upload-select-image');
+    var scaleInput = uploadForm.querySelector('.scale__control--value');
+    var scaleValue = parseInt(scaleInput.value.match(/[0-9]+/)[0], 10);
+    var mainPic = uploadForm.querySelector('.img-upload__preview').querySelector('img');
+
+    if (scaleValue + 25 !== 125) {
+      scaleValue += 25;
+      scaleInput.value = scaleValue + '%';
+      mainPic.style.transform = 'scale(' + scaleValue / 100 + ')';
+    }
+  }
+
+  function onDownScale() {
+    var uploadForm = document.querySelector('#upload-select-image');
+    var scaleInput = uploadForm.querySelector('.scale__control--value');
+    var scaleValue = parseInt(scaleInput.value.match(/[0-9]+/)[0], 10);
+    var mainPic = uploadForm.querySelector('.img-upload__preview').querySelector('img');
+
+    if (scaleValue - 25 !== 0) {
+      scaleValue -= 25;
+      scaleInput.value = scaleValue + '%';
+      mainPic.style.transform = 'scale(' + scaleValue / 100 + ')';
+    }
   }
 
   function onChangeEffects(evt) {

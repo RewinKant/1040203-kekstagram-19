@@ -100,7 +100,7 @@
     evt.stopPropagation();
   }
 
-  function changeRadioEffectValue(evt) {
+  function changeRadioEffectFilterValue(evt) {
     var uploadForm = document.querySelector('#upload-select-image');
     var mainPic = uploadForm.querySelector('.img-upload__preview').querySelector('img');
     var effectBar = uploadForm.querySelector('.img-upload__effect-level');
@@ -161,7 +161,7 @@
     }
   }
 
-  function tagleImgChangeEffectValue(tagleEvt) {
+  function tagleImgChangeEffectFilterValue(tagleEvt) {
     tagleEvt.preventDefault();
     var uploadForm = document.querySelector('#upload-select-image');
     var mainPic = uploadForm.querySelector('.img-upload__preview').querySelector('img');
@@ -205,8 +205,8 @@
     },
     change: {
       bigPicture: changeBigPicture,
-      radioEffectValue: changeRadioEffectValue,
-      imgEffectValue: tagleImgChangeEffectValue
+      radioEffectValue: changeRadioEffectFilterValue,
+      imgEffectValue: tagleImgChangeEffectFilterValue
     }
   };
 })();
