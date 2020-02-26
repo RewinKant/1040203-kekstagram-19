@@ -1,7 +1,13 @@
 'use strict';
 (function () {
   var countPhotos = 25;
+  var countLikes = {
+    min: 15,
+    max: 200
+  };
   var comments = {
+    min: 1,
+    max: 10,
     countAvatars: 6,
     name: [
       'Артем',
@@ -20,13 +26,15 @@
       'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!'
     ]
   };
+  var DEFAULT_EFFECT_VALUE = 100;
+  var DEFAULT_STYLE_FILTER = '';
 
   function createComments() {
     var massiveComments = [];
     var comment = {};
-    var numCommets = window.helpFun.includeRandomInt(1, 10);
+    var numCommets = window.helpFun.includeRandomInt(comments.min, comments.max);
 
-    for (var a = 0; a < numCommets - 1; a++) {
+    for (var a = 0; a < numCommets; a++) {
       comment = {
         avatar: 'img/avatar-' + window.helpFun.includeRandomInt(1, comments.countAvatars) + '.svg',
         message: comments.message[window.helpFun.includeRandomInt(0, comments.message.length - 1)],
@@ -44,7 +52,7 @@
       photo = {
         url: 'photos/' + b + '.jpg',
         description: '',
-        likes: window.helpFun.includeRandomInt(15, 200),
+        likes: window.helpFun.includeRandomInt(countLikes.min, countLikes.max),
         comments: createComments()
       };
       massivePhotos.push(photo);
@@ -105,59 +113,26 @@
     var mainPic = uploadForm.querySelector('.img-upload__preview').querySelector('img');
     var effectBar = uploadForm.querySelector('.img-upload__effect-level');
     var effectValue = effectBar.querySelector('.effect-level__value');
-    var defaultEffectValue = 100;
-    var defaultStyleFilter = '';
+    var currentFilter = mainPic.getAttribute('class');
 
     if (evt.target.value === 'none' && mainPic.classList.length > 0) {
       window.variable.typeEffect = evt.target.value;
-      mainPic.classList.remove('effects__preview--chrome', 'effects__preview--sepia', 'effects__preview--marvin', 'effects__preview--phobos', 'effects__preview--heat');
-      mainPic.style.filter = defaultStyleFilter;
+      if (currentFilter) {
+        mainPic.classList.remove(currentFilter);
+      }
+      mainPic.style.filter = DEFAULT_STYLE_FILTER;
       effectBar.classList.add('hidden');
-    } else if (evt.target.value === 'chrome') {
+    } else {
       window.variable.typeEffect = evt.target.value;
-      mainPic.classList.add('effects__preview--chrome');
-      mainPic.classList.remove('effects__preview--sepia', 'effects__preview--marvin', 'effects__preview--phobos', 'effects__preview--heat');
-      effectValue.value = defaultEffectValue;
-      mainPic.style.filter = window.helpFun.setFilterValue(defaultEffectValue, window.variable.typeEffect);
+      if (currentFilter) {
+        mainPic.classList.remove(currentFilter);
+      }
       if (effectBar.classList.contains('hidden')) {
         effectBar.classList.remove('hidden');
       }
-    } else if (evt.target.value === 'sepia') {
-      window.variable.typeEffect = evt.target.value;
-      mainPic.classList.add('effects__preview--sepia');
-      mainPic.classList.remove('effects__preview--chrome', 'effects__preview--marvin', 'effects__preview--phobos', 'effects__preview--heat');
-      effectValue.value = defaultEffectValue;
-      mainPic.style.filter = window.helpFun.setFilterValue(defaultEffectValue, window.variable.typeEffect);
-      if (effectBar.classList.contains('hidden')) {
-        effectBar.classList.remove('hidden');
-      }
-    } else if (evt.target.value === 'marvin') {
-      window.variable.typeEffect = evt.target.value;
-      mainPic.classList.add('effects__preview--marvin');
-      mainPic.classList.remove('effects__preview--chrome', 'effects__preview--sepia', 'effects__preview--phobos', 'effects__preview--heat');
-      effectValue.value = defaultEffectValue;
-      mainPic.style.filter = window.helpFun.setFilterValue(defaultEffectValue, window.variable.typeEffect);
-      if (effectBar.classList.contains('hidden')) {
-        effectBar.classList.remove('hidden');
-      }
-    } else if (evt.target.value === 'phobos') {
-      window.variable.typeEffect = evt.target.value;
-      mainPic.classList.add('effects__preview--phobos');
-      mainPic.classList.remove('effects__preview--chrome', 'effects__preview--sepia', 'effects__preview--marvin', 'effects__preview--heat');
-      effectValue.value = defaultEffectValue;
-      mainPic.style.filter = window.helpFun.setFilterValue(defaultEffectValue, window.variable.typeEffect);
-      if (effectBar.classList.contains('hidden')) {
-        effectBar.classList.remove('hidden');
-      }
-    } else if (evt.target.value === 'heat') {
-      window.variable.typeEffect = evt.target.value;
-      mainPic.classList.add('effects__preview--heat');
-      mainPic.classList.remove('effects__preview--chrome', 'effects__preview--sepia', 'effects__preview--marvin', 'effects__preview--phobos');
-      effectValue.value = defaultEffectValue;
-      mainPic.style.filter = window.helpFun.setFilterValue(defaultEffectValue, window.variable.typeEffect);
-      if (effectBar.classList.contains('hidden')) {
-        effectBar.classList.remove('hidden');
-      }
+      mainPic.classList.add('effects__preview--' + evt.target.value);
+      mainPic.style.filter = window.helpFun.setFilterValue(DEFAULT_EFFECT_VALUE, evt.target.value);
+      effectValue.value = DEFAULT_EFFECT_VALUE;
     }
   }
 
@@ -169,23 +144,23 @@
     var effectLevelLine = uploadForm.querySelector('.effect-level__line');
     var effectLevelDepth = uploadForm.querySelector('.effect-level__depth');
     var effectValue = uploadForm.querySelector('.effect-level__value');
-    var startX = tagleEvt.clientX;
 
-    var widthLine = effectLevelLine.offsetWidth;
+    var startX = tagleEvt.clientX;
+    var pinMaxValue = effectLevelLine.offsetWidth;
+    var pinMinValue = 0;
 
     function tagleMove(moveEvt) {
       moveEvt.preventDefault();
       var shiftX = startX - moveEvt.clientX;
 
       startX = moveEvt.clientX;
-      if ((effectLevelPin.offsetLeft - shiftX) < widthLine && (effectLevelPin.offsetLeft - shiftX) > 0) {
-        effectLevelPin.style.left = ((effectLevelPin.offsetLeft - shiftX) * 100) / widthLine + '%';
+      if ((effectLevelPin.offsetLeft - shiftX) < pinMaxValue && (effectLevelPin.offsetLeft - shiftX) > pinMinValue) {
+        effectLevelPin.style.left = ((effectLevelPin.offsetLeft - shiftX) * 100) / pinMaxValue + '%';
         effectLevelDepth.style.width = effectLevelDepth.offsetWidth - shiftX + 'px';
-        effectValue.value = Math.floor(((effectLevelPin.offsetLeft - shiftX) * 100) / widthLine);
+        effectValue.value = Math.floor(((effectLevelPin.offsetLeft - shiftX) * 100) / pinMaxValue);
         mainPic.style.filter = window.helpFun.setFilterValue(effectValue.value, window.variable.typeEffect);
       }
     }
-
     function tagleUp() {
       document.removeEventListener('mousemove', tagleMove);
       document.removeEventListener('mouseup', tagleUp);

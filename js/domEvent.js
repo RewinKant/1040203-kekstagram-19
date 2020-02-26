@@ -1,9 +1,15 @@
 'use strict';
 
 (function () {
+  var ESC_KEYCODE = 27;
+  var DEF_MAX_VALUE = 100;
+  var DEF_MIN_VALUE = 25;
+  var DEF_STEP = 25;
+
   function onOpenBigPicture(evt) {
     var bigPicture = document.querySelector('.big-picture');
     var closeButton = bigPicture.querySelector('#picture-cancel');
+
     if (evt.target && evt.target.closest('.picture__img')) {
       window.dom.change.bigPicture(evt);
       closeButton.addEventListener('click', onCloseBigPicture);
@@ -62,24 +68,30 @@
     var imgChangeForm = uploadForm.querySelector('.img-upload__overlay');
     var buttonCloseChangeImg = uploadForm.querySelector('#upload-cancel');
     var hashtags = uploadForm.querySelector('.text__hashtags');
+    var effectLevelPin = uploadForm.querySelector('.effect-level__pin');
+    var buttonClickUpScale = uploadForm.querySelector('.scale__control--bigger');
+    var buttonClickDownScale = uploadForm.querySelector('.scale__control--smaller');
 
     imgChangeForm.classList.add('hidden');
     body.classList.remove('modal-open');
 
     uploadForm.removeEventListener('change', onChangeEffects);
     buttonCloseChangeImg.removeEventListener('click', onCloseImgChangeForm);
-    buttonCloseChangeImg.removeEventListener('keydown', onKeydownCloseImgChangeForm);
+    document.removeEventListener('keydown', onKeydownCloseImgChangeForm);
     hashtags.removeEventListener('focusout', onInputHashtagsChange);
+    effectLevelPin.removeEventListener('mousedown', onClickTagleImgChangeForm);
+    buttonClickUpScale.removeEventListener('click', onUpScale);
+    buttonClickDownScale.removeEventListener('click', onDownScale);
   }
 
   function onKeydownCloseImgChangeForm(evt) {
-    if (evt.keyCode === 27) {
+    if (evt.keyCode === ESC_KEYCODE) {
       onCloseImgChangeForm();
     }
   }
 
   function onKeydownCloseBigPicture(evt) {
-    if (evt.keyCode === 27) {
+    if (evt.keyCode === ESC_KEYCODE) {
       onCloseBigPicture();
     }
   }
@@ -94,8 +106,8 @@
     var scaleValue = parseInt(scaleInput.value.match(/[0-9]+/)[0], 10);
     var mainPic = uploadForm.querySelector('.img-upload__preview').querySelector('img');
 
-    if (scaleValue + 25 !== 125) {
-      scaleValue += 25;
+    if (scaleValue !== DEF_MAX_VALUE) {
+      scaleValue += DEF_STEP;
       scaleInput.value = scaleValue + '%';
       mainPic.style.transform = 'scale(' + scaleValue / 100 + ')';
     }
@@ -107,8 +119,8 @@
     var scaleValue = parseInt(scaleInput.value.match(/[0-9]+/)[0], 10);
     var mainPic = uploadForm.querySelector('.img-upload__preview').querySelector('img');
 
-    if (scaleValue - 25 !== 0) {
-      scaleValue -= 25;
+    if (scaleValue !== DEF_MIN_VALUE) {
+      scaleValue -= DEF_STEP;
       scaleInput.value = scaleValue + '%';
       mainPic.style.transform = 'scale(' + scaleValue / 100 + ')';
     }
