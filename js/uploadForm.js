@@ -9,7 +9,7 @@
   var HACHTAGS_MAX_COUNT = 5;
   var HASHTAG_MAX_LENGTH = 20;
   var COMENT_MAX_LENGTH = 120;
-  var URL = 'https://js.dump.academy/kekstagramm';
+  var URL = 'https://js.dump.academy/kekstagram';
 
   var uploadForm = document.querySelector('#upload-select-image');
   var imgUploadForm = uploadForm.querySelector('.img-upload__overlay');
@@ -28,74 +28,44 @@
     uploadFile.addEventListener('change', onOpenImgUploadForm);
   });
 
-  function upload(data, onSuccess, onError) {
-    var xhr = new XMLHttpRequest();
-    xhr.responseType = 'json';
-    xhr.timeout = 10000;
+  // function onErrorM() {
+  //   uploadForm.appendChild(templateError);
+  //
+  //   imgUploadForm.classList.add('hidden');
+  //   messageError.addEventListener('click', onCloseErrorMessage);
+  //   document.addEventListener('keydown', onCloseErrorMessage);
+  // }
 
-    xhr.addEventListener('load', function () {
-      var error;
-      switch (xhr.status) {
-        case 200:
-          onSuccess();
-          break;
-        case 400:
-          error = 'Неверный запрос';
-          break;
-        case 401:
-          error = 'Пользователь не авторизован';
-          break;
-        case 404:
-          error = 'Ничего не найдено';
-          break;
-
-        default:
-          error = 'Cтатус ответа: : ' + xhr.status + ' ' + xhr.statusText;
-      }
-      if (error) {
-        onError(error);
-      }
-    });
-
-    xhr.addEventListener('error', function () {
-      onError('Произошла ошибка соединения');
-    });
-
-    xhr.addEventListener('timeout', function () {
-      onError('Запрос не успел выполниться за ' + xhr.timeout + 'мс');
-    });
-
-
-    xhr.open('POST', URL);
-    xhr.send(data);
-  }
-
-  function onErrorM(message) {
-    console.error(message);
-    uploadForm.appendChild(templateError);
-
-    imgUploadForm.classList.add('hidden');
-    messageError.addEventListener('click', onCloseErrorMessage);
-    document.addEventListener('keydown', onCloseErrorMessage);
-  }
-
-  function onComplete() {
-    uploadForm.appendChild(templateSeccess);
-    onCloseImgUploadForm();
-    uploadForm.reset();
-
-    messageSuccess.addEventListener('click', onCloseCompleteMessage);
-    document.addEventListener('keydown', onCloseCompleteMessage);
-  }
+  // function onComplete() {
+  //   uploadForm.appendChild(templateSeccess);
+  //   onCloseImgUploadForm();
+  //   uploadForm.reset();
+  //
+  //   messageSuccess.addEventListener('click', onCloseCompleteMessage);
+  //   document.addEventListener('keydown', onCloseCompleteMessage);
+  // }
 
   function onSubmitUploadForm(evt) {
     evt.preventDefault();
-    upload(new FormData(uploadForm), onComplete, onErrorM);
+    window.xhr.load(URL, 'POST', function onComplete() {
+      uploadForm.appendChild(templateSeccess);
+      onCloseImgUploadForm();
+      uploadForm.reset();
+
+      messageSuccess.addEventListener('click', onCloseCompleteMessage);
+      document.addEventListener('keydown', onCloseCompleteMessage);
+    }, function onErrorM() {
+      uploadForm.appendChild(templateError);
+
+      imgUploadForm.classList.add('hidden');
+      messageError.addEventListener('click', onCloseErrorMessage);
+      document.addEventListener('keydown', onCloseErrorMessage);
+    }, new FormData(uploadForm));
   }
 
   function onCloseCompleteMessage(evt) {
-    if (evt.target.matches('.success') ||
-        evt.target.matches('.success__button') ||
+    if (evt.target.matches('.success') || //
+        evt.target.matches('.success__button') || //
         evt.keyCode === ESC_KEYCODE) {
       templateSeccess.appendChild(messageSuccess);
       messageSuccess.removeEventListener('click', onCloseCompleteMessage);
@@ -104,8 +74,8 @@
   }
 
   function onCloseErrorMessage(evt) {
-    if (evt.target.matches('.error') ||
-        evt.target.matches('.error__button') ||
+    if (evt.target.matches('.error') || //
+        evt.target.matches('.error__button') || //
         evt.keyCode === ESC_KEYCODE) {
       imgUploadForm.classList.remove('hidden');
       templateError.appendChild(messageError);
@@ -172,7 +142,8 @@
   }
 
   function onInputHashtagsChange(evt) {
-    var userHashtags = evt.target.value.toLowerCase().replace(/ +/g, ' ').trim().split(' ');
+    var value = evt.target.value;
+    var userHashtags = value.split(/\s+/gi);
     var regExpValid = /^#[a-zА-я0-9]{1,19}$/;
     var exit = [];
     var errorDef = '';
@@ -262,6 +233,7 @@
     effectLevelPin.removeEventListener('mousedown', onClickTagleImgUploadForm);
     buttonClickUpScale.removeEventListener('click', onUpScale);
     buttonClickDownScale.removeEventListener('click', onDownScale);
+    uploadForm.removeEventListener('submit', onSubmitUploadForm);
   }
 
   function onKeydownCloseImgUploadForm(evt) {
@@ -303,47 +275,16 @@
 
   function setFilterValue(value, type) {
     var FILTER_SETTINGS = {
-      chrome: {
-        css: 'grayscale',
-        min: 0,
-        max: 1,
-        unit: ''
-      },
-      sepia: {
-        css: 'sepia',
-        min: 0,
-        max: 1,
-        unit: ''
-      },
-      marvin: {
-        css: 'invert',
-        min: 0,
-        max: 100,
-        unit: '%'
-      },
-      phobos: {
-        css: 'blur',
-        min: 0,
-        max: 3,
-        unit: 'px'
-      },
-      heat: {
-        css: 'brightness',
-        min: 1,
-        max: 3,
-        unit: ''
-      }
+      chrome: {css: 'grayscale', min: 0, max: 1, unit: ''},
+      sepia: {css: 'sepia', min: 0, max: 1, unit: ''},
+      marvin: {css: 'invert', min: 0, max: 100, unit: '%'},
+      phobos: {css: 'blur', min: 0, max: 3, unit: 'px'},
+      heat: {css: 'brightness', min: 1, max: 3, unit: ''}
     };
     var strEffect = '';
-    for (var i in FILTER_SETTINGS) {
-      if (type === i) {
-        strEffect =
-        FILTER_SETTINGS[i].css +
-        '(' +
-        (((value * (FILTER_SETTINGS[i].max - FILTER_SETTINGS[i].min)) / 100) + FILTER_SETTINGS[i].min) + FILTER_SETTINGS[i].unit +
-        ')';
-      }
-    }
+    var defaultValue = (((value * (FILTER_SETTINGS[type].max - FILTER_SETTINGS[type].min)) / 100) + FILTER_SETTINGS[type].min);
+    strEffect = FILTER_SETTINGS[type].css + '(' + defaultValue + FILTER_SETTINGS[type].unit + ')';
+
     return strEffect;
   }
 })();
