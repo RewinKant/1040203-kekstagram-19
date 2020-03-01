@@ -9,17 +9,110 @@
   var HACHTAGS_MAX_COUNT = 5;
   var HASHTAG_MAX_LENGTH = 20;
   var COMENT_MAX_LENGTH = 120;
+  var URL = 'https://js.dump.academy/kekstagramm';
 
   var uploadForm = document.querySelector('#upload-select-image');
+  var imgUploadForm = uploadForm.querySelector('.img-upload__overlay');
   var buttonCloseUploadForm = uploadForm.querySelector('#upload-cancel');
   var uploadFile = uploadForm.querySelector('#upload-file');
   var mainPic = uploadForm.querySelector('.img-upload__preview').querySelector('img');
   var effectLevelPin = uploadForm.querySelector('.effect-level__pin');
+  var templateSeccess = document.querySelector('#success').content;
+  var messageSuccess = templateSeccess.querySelector('.success');
+  var templateError = document.querySelector('#error').content;
+  var messageError = templateError.querySelector('.error');
+
 
   uploadFile.addEventListener('focus', function () {
     uploadFile.value = '';
     uploadFile.addEventListener('change', onOpenImgUploadForm);
   });
+
+  function upload(data, onSuccess, onError) {
+    var xhr = new XMLHttpRequest();
+    xhr.responseType = 'json';
+    xhr.timeout = 10000;
+
+    xhr.addEventListener('load', function () {
+      var error;
+      switch (xhr.status) {
+        case 200:
+          onSuccess();
+          break;
+        case 400:
+          error = 'Неверный запрос';
+          break;
+        case 401:
+          error = 'Пользователь не авторизован';
+          break;
+        case 404:
+          error = 'Ничего не найдено';
+          break;
+
+        default:
+          error = 'Cтатус ответа: : ' + xhr.status + ' ' + xhr.statusText;
+      }
+      if (error) {
+        onError(error);
+      }
+    });
+
+    xhr.addEventListener('error', function () {
+      onError('Произошла ошибка соединения');
+    });
+
+    xhr.addEventListener('timeout', function () {
+      onError('Запрос не успел выполниться за ' + xhr.timeout + 'мс');
+    });
+
+
+    xhr.open('POST', URL);
+    xhr.send(data);
+  }
+
+  function onErrorM(message) {
+    console.error(message);
+    uploadForm.appendChild(templateError);
+
+    imgUploadForm.classList.add('hidden');
+    messageError.addEventListener('click', onCloseErrorMessage);
+    document.addEventListener('keydown', onCloseErrorMessage);
+  }
+
+  function onComplete() {
+    uploadForm.appendChild(templateSeccess);
+    onCloseImgUploadForm();
+    uploadForm.reset();
+
+    messageSuccess.addEventListener('click', onCloseCompleteMessage);
+    document.addEventListener('keydown', onCloseCompleteMessage);
+  }
+
+  function onSubmitUploadForm(evt) {
+    evt.preventDefault();
+    upload(new FormData(uploadForm), onComplete, onErrorM);
+  }
+
+  function onCloseCompleteMessage(evt) {
+    if (evt.target.matches('.success') ||
+        evt.target.matches('.success__button') ||
+        evt.keyCode === ESC_KEYCODE) {
+      templateSeccess.appendChild(messageSuccess);
+      messageSuccess.removeEventListener('click', onCloseCompleteMessage);
+      document.removeEventListener('keydown', onCloseCompleteMessage);
+    }
+  }
+
+  function onCloseErrorMessage(evt) {
+    if (evt.target.matches('.error') ||
+        evt.target.matches('.error__button') ||
+        evt.keyCode === ESC_KEYCODE) {
+      imgUploadForm.classList.remove('hidden');
+      templateError.appendChild(messageError);
+      messageError.removeEventListener('click', onCloseErrorMessage);
+      document.removeEventListener('keydown', onCloseErrorMessage);
+    }
+  }
 
   function changeRadioEffectFilterValue(evt) {
     var effectBar = uploadForm.querySelector('.img-upload__effect-level');
@@ -123,7 +216,7 @@
 
   function onOpenImgUploadForm(evt) {
     var body = document.querySelector('body');
-    var imgUploadForm = uploadForm.querySelector('.img-upload__overlay');
+
     var effectBar = uploadForm.querySelector('.img-upload__effect-level');
     var hashtags = uploadForm.querySelector('.text__hashtags');
     var coment = uploadForm.querySelector('.text__description');
@@ -150,11 +243,11 @@
     effectLevelPin.addEventListener('mousedown', onClickTagleImgUploadForm);
     buttonClickUpScale.addEventListener('click', onUpScale);
     buttonClickDownScale.addEventListener('click', onDownScale);
+    uploadForm.addEventListener('submit', onSubmitUploadForm);
   }
 
   function onCloseImgUploadForm() {
     var body = document.querySelector('body');
-    var imgUploadForm = uploadForm.querySelector('.img-upload__overlay');
     var hashtags = uploadForm.querySelector('.text__hashtags');
     var buttonClickUpScale = uploadForm.querySelector('.scale__control--bigger');
     var buttonClickDownScale = uploadForm.querySelector('.scale__control--smaller');

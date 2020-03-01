@@ -8,27 +8,6 @@
 
   loadData(URL_GET, onComplete, onErrorM);
 
-  function onComplete(response) {
-    window.variable.massivePhotos = response
-    var sectionPictures = document.querySelector('.pictures');
-    var templatePicture = document.querySelector('#picture').content.querySelector('a');
-    var pictureFragment = document.createDocumentFragment();
-
-    for (var i = 0; i < window.variable.massivePhotos.length; i++) {
-      var element = templatePicture.cloneNode(true);
-      element.querySelector('.picture__img').src = window.variable.massivePhotos[i].url;
-      element.querySelector('.picture__likes').textContent = window.variable.massivePhotos[i].likes;
-      element.querySelector('.picture__comments').textContent = window.variable.massivePhotos[i].comments.length;
-      pictureFragment.appendChild(element);
-    }
-    sectionPictures.appendChild(pictureFragment);
-  }
-
-  function onErrorM(message) {
-    console.error(message);
-  }
-
-
   function loadData(url, onSuccess, onError) {
     var xhr = new XMLHttpRequest();
 
@@ -70,7 +49,27 @@
 
     xhr.open('GET', url);
     xhr.send();
-  };
+  }
+
+  function onErrorM(message) {
+    console.error(message);
+  }
+
+  function onComplete(response) {
+    window.variable.massivePhotos = response;
+    var sectionPictures = document.querySelector('.pictures');
+    var templatePicture = document.querySelector('#picture').content.querySelector('a');
+    var pictureFragment = document.createDocumentFragment();
+
+    for (var i = 0; i < window.variable.massivePhotos.length; i++) {
+      var element = templatePicture.cloneNode(true);
+      element.querySelector('.picture__img').src = window.variable.massivePhotos[i].url;
+      element.querySelector('.picture__likes').textContent = window.variable.massivePhotos[i].likes;
+      element.querySelector('.picture__comments').textContent = window.variable.massivePhotos[i].comments.length;
+      pictureFragment.appendChild(element);
+    }
+    sectionPictures.appendChild(pictureFragment);
+  }
 
   window.load = loadData;
 })();
