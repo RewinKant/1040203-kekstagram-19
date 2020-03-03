@@ -31,19 +31,19 @@
     massivePhotos: createPhoto(),
     typeEffect: '',
   };
-
-  var sectionPictures = document.querySelector('.pictures');
-  var templatePicture = document.querySelector('#picture').content.querySelector('a');
-  var pictureFragment = document.createDocumentFragment();
-
-  for (var i = 0; i < window.variable.massivePhotos.length; i++) {
-    var element = templatePicture.cloneNode(true);
-    element.querySelector('.picture__img').src = window.variable.massivePhotos[i].url;
-    element.querySelector('.picture__likes').textContent = window.variable.massivePhotos[i].likes;
-    element.querySelector('.picture__comments').textContent = window.variable.massivePhotos[i].comments.length;
-    pictureFragment.appendChild(element);
-  }
-  sectionPictures.appendChild(pictureFragment);
+  //
+  // var sectionPictures = document.querySelector('.pictures');
+  // var templatePicture = document.querySelector('#picture').content.querySelector('a');
+  // var pictureFragment = document.createDocumentFragment();
+  //
+  // for (var i = 0; i < window.variable.massivePhotos.length; i++) {
+  //   var element = templatePicture.cloneNode(true);
+  //   element.querySelector('.picture__img').src = window.variable.massivePhotos[i].url;
+  //   element.querySelector('.picture__likes').textContent = window.variable.massivePhotos[i].likes;
+  //   element.querySelector('.picture__comments').textContent = window.variable.massivePhotos[i].comments.length;
+  //   pictureFragment.appendChild(element);
+  // }
+  // sectionPictures.appendChild(pictureFragment);
 
   function includeRandomInt(min, max) {
     min = Math.ceil(min);
@@ -81,92 +81,7 @@
     }
     return massivePhotos;
   }
-
-  function onError(message) {
-    console.error(message);
+  window.dump = {
+    photo
   }
-
-  // var xhr = new XMLHttpRequest();
-  // var URL = 'https://js.dump.academy/kekstagram/data';
-  // xhr.responseType = 'json';
-  // xhr.addEventListener('load', function () {
-  //   var error;
-  //   switch (xhr.status) {
-  //     case 200:
-  //       onSuccess(xhr.response);
-  //       break;
-  //     case 400:
-  //       error = 'Неверный запрос';
-  //       break;
-  //     case 401:
-  //       error = 'Пользователь не авторизован';
-  //       break;
-  //     case 404:
-  //       error = 'Ничего не найдено';
-  //       break;
-  //
-  //     default:
-  //       error = 'Cтатус ответа: : ' + xhr.status + ' ' + xhr.statusText;
-  //   }
-  //   if (error) {
-  //     onError(error);
-  //   }
-  // });
-  // xhr.addEventListener('error', function () {
-  //   onError('Произошла ошибка соединения');
-  // });
-  //
-  // xhr.addEventListener('timeout', function () {
-  //   onError('Запрос не успел выполниться за ' + xhr.timeout + 'мс');
-  // });
-  //
-  // xhr.timeout = 1000;
-  //
-  // xhr.open('GET', URL);
-  // xhr.send();
-
-  (function () {
-    window.load = function (url, onSuccess, onError) {
-      var xhr = new XMLHttpRequest();
-
-      xhr.responseType = 'json';
-
-      xhr.addEventListener('load', function () {
-        var error;
-        switch (xhr.status) {
-          case 200:
-            onSuccess(xhr.response);
-            break;
-          case 400:
-            error = 'Неверный запрос';
-            break;
-          case 401:
-            error = 'Пользователь не авторизован';
-            break;
-          case 404:
-            error = 'Ничего не найдено';
-            break;
-
-          default:
-            error = 'Cтатус ответа: : ' + xhr.status + ' ' + xhr.statusText;
-        }
-        if (error) {
-          onError(error);
-        }
-      });
-
-      xhr.addEventListener('error', function () {
-        onError('Произошла ошибка соединения');
-      });
-
-      xhr.addEventListener('timeout', function () {
-        onError('Запрос не успел выполниться за ' + xhr.timeout + 'мс');
-      });
-
-      xhr.timeout = 10000; // 10s
-
-      xhr.open('GET', url);
-      xhr.send();
-    };
-  })();
 })();

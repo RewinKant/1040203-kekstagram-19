@@ -6,8 +6,11 @@
   var DEF_STEP = 25;
   var DEFAULT_EFFECT_VALUE = 100;
   var DEFAULT_STYLE_FILTER = '';
-  var HACHTAGS_MAX_COUNT = 5;
-  var HASHTAG_MAX_LENGTH = 20;
+  var Hashtag = {
+    MAX_COUNT: 5,
+    MAX_LENGTH: 20,
+    REG_EXP: /^#[a-zА-я0-9]{1,19}$/
+  };
   var COMENT_MAX_LENGTH = 120;
   var URL = 'https://js.dump.academy/kekstagram';
 
@@ -85,27 +88,28 @@
   }
 
   function changeRadioEffectFilterValue(evt) {
+    var value = evt.target.value;
     var effectBar = uploadForm.querySelector('.img-upload__effect-level');
     var effectValue = effectBar.querySelector('.effect-level__value');
     var currentFilter = mainPic.getAttribute('class');
 
-    if (evt.target.value === 'none' && mainPic.classList.length > 0) {
-      window.variable.typeEffect = evt.target.value;
+    if (value === 'none' && mainPic.classList.length > 0) {
+      window.data.typeEffect = value;
       if (currentFilter) {
         mainPic.classList.remove(currentFilter);
       }
       mainPic.style.filter = DEFAULT_STYLE_FILTER;
       effectBar.classList.add('hidden');
     } else {
-      window.variable.typeEffect = evt.target.value;
+      window.data.typeEffect = value;
       if (currentFilter) {
         mainPic.classList.remove(currentFilter);
       }
       if (effectBar.classList.contains('hidden')) {
         effectBar.classList.remove('hidden');
       }
-      mainPic.classList.add('effects__preview--' + evt.target.value);
-      mainPic.style.filter = setFilterValue(DEFAULT_EFFECT_VALUE, evt.target.value);
+      mainPic.classList.add('effects__preview--' + value);
+      mainPic.style.filter = setFilterValue(DEFAULT_EFFECT_VALUE, value);
       effectValue.value = DEFAULT_EFFECT_VALUE;
     }
   }
@@ -129,7 +133,7 @@
         effectLevelPin.style.left = ((effectLevelPin.offsetLeft - shiftX) * 100) / pinMaxValue + '%';
         effectLevelDepth.style.width = effectLevelDepth.offsetWidth - shiftX + 'px';
         effectValue.value = Math.floor(((effectLevelPin.offsetLeft - shiftX) * 100) / pinMaxValue);
-        mainPic.style.filter = setFilterValue(effectValue.value, window.variable.typeEffect);
+        mainPic.style.filter = setFilterValue(effectValue.value, window.data.typeEffect);
       }
     }
     function tagleUp() {
@@ -143,35 +147,31 @@
 
   function onInputHashtagsChange(evt) {
     var value = evt.target.value;
-    var userHashtags = value.split(/\s+/gi);
-    var regExpValid = /^#[a-zА-я0-9]{1,19}$/;
-    var exit = [];
+    var userHashtag = value.toLowerCase().split(/\s+/g);
     var errorDef = '';
-    if (userHashtags[0] !== '') {
-      if (userHashtags.length > HACHTAGS_MAX_COUNT) {
-        exit.push('Введите не более 5 хештегов');
-      }
-      for (var i = 0; i < userHashtags.length; i++) {
-        for (var j = i + 1; j < userHashtags.length - 1; j++) {
-          if (userHashtags[i] === userHashtags[j]) {
-            exit.push((i + 1) + '-й и ' + (j + 1) + '-й хэштеги одинаковы');
-          }
-        }
-        if (!regExpValid.test(userHashtags[i])) {
-          if (userHashtags[i].length > HASHTAG_MAX_LENGTH) {
-            exit.push((i + 1) + '-й хэштег длиннее 20 символов');
-          } else if (userHashtags[i].length < 2) {
-            exit.push((i + 1) + '-й хэштег слишком короткий');
-          } else {
-            exit.push('У ' + (i + 1) + '-го хэштега неверный формат');
-          }
-        }
-      }
-    }
-    for (var u = 0; u < exit.length; u++) {
-      errorDef += exit[u] + ', ';
-    }
 
+    if (userHashtag[0] !== '') {
+      if (userHashtag.length > Hashtag.MAX_COUNT) {
+        errorDef += 'Введите не более 5 хештегов. ';
+      }
+      errorDef = userHashtag.reduce(function (acumulator, item, i, array) {
+        for (var j = i + 1; j < array.length; j++) {
+          if (item === array[j]) {
+            acumulator += (i + 1) + '-й и ' + (j + 1) + '-й хэштеги одинаковы. ';
+          }
+        }
+        if (!Hashtag.REG_EXP.test(item)) {
+          if (item.length > Hashtag.MAX_LENGTH) {
+            acumulator += (i + 1) + '-й хэштег длиннее 20 символов. ';
+          } else if (userHashtag[i].length < 2) {
+            acumulator += (i + 1) + '-й хэштег слишком короткий. ';
+          } else {
+            acumulator += 'У ' + (i + 1) + '-го хэштега неверный формат. ';
+          }
+        }
+        return acumulator;
+      }, errorDef);
+    }
     evt.target.setCustomValidity(errorDef);
     evt.target.reportValidity();
   }
@@ -247,7 +247,7 @@
       changeRadioEffectFilterValue(evt);
     }
     if (evt.target.matches('.effect-level__value')) {
-      mainPic.style.filter = setFilterValue(evt.target.value, window.variable.typeEffect);
+      mainPic.style.filter = setFilterValue(evt.target.value, window.data.typeEffect);
     }
   }
 
@@ -282,8 +282,9 @@
       heat: {css: 'brightness', min: 1, max: 3, unit: ''}
     };
     var strEffect = '';
-    var defaultValue = (((value * (FILTER_SETTINGS[type].max - FILTER_SETTINGS[type].min)) / 100) + FILTER_SETTINGS[type].min);
-    strEffect = FILTER_SETTINGS[type].css + '(' + defaultValue + FILTER_SETTINGS[type].unit + ')';
+    var typeF = FILTER_SETTINGS[type];
+    var defaultValue = (((value * (typeF.max - typeF.min)) / 100) + typeF.min);
+    strEffect = typeF.css + '(' + defaultValue + typeF.unit + ')';
 
     return strEffect;
   }

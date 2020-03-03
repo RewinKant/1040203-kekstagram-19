@@ -33,7 +33,7 @@
   }
 
   function changeBigPicture(cickImg) {
-    var massivePhotos = window.variable.massivePhotos;
+    var massivePhotos = window.data.massivePhotos;
     var bigPicture = document.querySelector('.big-picture');
     var commentsListPicture = bigPicture.querySelector('.social__comments');
 
