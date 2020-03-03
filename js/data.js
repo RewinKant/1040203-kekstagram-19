@@ -1,75 +1,53 @@
 'use strict';
 (function () {
+  var ESC_KEYCODE = 27;
   var URL_GET = 'https://js.dump.academy/kekstagram/data';
-  window.variable = {
+  window.data = {
     massivePhotos: [],
     typeEffect: '',
+    onComplete: onComplete
   };
 
-  loadData(URL_GET, onComplete, onErrorM);
+  var templateError = document.querySelector('#error').content;
+  var messageError = templateError.querySelector('.error');
 
-  function loadData(url, onSuccess, onError) {
-    var xhr = new XMLHttpRequest();
+  window.xhr.load(URL_GET, 'GET', onComplete, onErrorM, {});
 
-    xhr.responseType = 'json';
+  function onCloseErrorMessage(evt) {
+    if (evt.target.matches('.error') ||
+        evt.target.matches('.error__button') ||
+        evt.keyCode === ESC_KEYCODE) {
 
-    xhr.addEventListener('load', function () {
-      var error;
-      switch (xhr.status) {
-        case 200:
-          onSuccess(xhr.response);
-          break;
-        case 400:
-          error = 'Неверный запрос';
-          break;
-        case 401:
-          error = 'Пользователь не авторизован';
-          break;
-        case 404:
-          error = 'Ничего не найдено';
-          break;
-
-        default:
-          error = 'Cтатус ответа: : ' + xhr.status + ' ' + xhr.statusText;
-      }
-      if (error) {
-        onError(error);
-      }
-    });
-
-    xhr.addEventListener('error', function () {
-      onError('Произошла ошибка соединения');
-    });
-
-    xhr.addEventListener('timeout', function () {
-      onError('Запрос не успел выполниться за ' + xhr.timeout + 'мс');
-    });
-
-    xhr.timeout = 10000; // 10s
-
-    xhr.open('GET', url);
-    xhr.send();
-  }
-
-  function onErrorM(message) {
-    console.error(message);
+      templateError.appendChild(messageError);
+      messageError.removeEventListener('click', onCloseErrorMessage);
+      document.removeEventListener('keydown', onCloseErrorMessage);
+    }
   }
 
   function onComplete(response) {
-    window.variable.massivePhotos = response;
+    window.data.massivePhotos = response;
     var sectionPictures = document.querySelector('.pictures');
     var templatePicture = document.querySelector('#picture').content.querySelector('a');
     var pictureFragment = document.createDocumentFragment();
+    var filterDashboard = document.querySelector('.img-filters');
 
-    for (var i = 0; i < window.variable.massivePhotos.length; i++) {
+    window.data.massivePhotos.forEach(function (count) {
       var element = templatePicture.cloneNode(true);
-      element.querySelector('.picture__img').src = window.variable.massivePhotos[i].url;
-      element.querySelector('.picture__likes').textContent = window.variable.massivePhotos[i].likes;
-      element.querySelector('.picture__comments').textContent = window.variable.massivePhotos[i].comments.length;
+      element.querySelector('.picture__img').src = count.url;
+      element.querySelector('.picture__likes').textContent = count.likes;
+      element.querySelector('.picture__comments').textContent = count.comments.length;
       pictureFragment.appendChild(element);
-    }
+    });
     sectionPictures.appendChild(pictureFragment);
+    filterDashboard.classList.remove('img-filters--inactive');
   }
 
-  window.load = loadData;
+  function onErrorM() {
+    var main = document.querySelector('main');
+
+    main.appendChild(templateError);
+
+    messageError.addEventListener('click', onCloseErrorMessage);
+    document.addEventListener('keydown', onCloseErrorMessage);
+  }
 })();
