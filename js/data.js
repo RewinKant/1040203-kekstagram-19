@@ -5,13 +5,19 @@
   window.data = {
     massivePhotos: [],
     typeEffect: '',
-    onComplete: onComplete
+    showPic: showDataPic
   };
 
   var templateError = document.querySelector('#error').content;
   var messageError = templateError.querySelector('.error');
 
-  window.xhr.load(URL_GET, 'GET', onComplete, onErrorM, {});
+  function onComplete(response) {
+    window.data.massivePhotos = response;
+    var filterDashboard = document.querySelector('.img-filters');
+
+    showDataPic(response);
+    filterDashboard.classList.remove('img-filters--inactive');
+  }
 
   function onCloseErrorMessage(evt) {
     if (evt.target.matches('.error') ||
@@ -24,14 +30,13 @@
     }
   }
 
-  function onComplete(response) {
-    window.data.massivePhotos = response;
+
+  function showDataPic(data) {
     var sectionPictures = document.querySelector('.pictures');
     var templatePicture = document.querySelector('#picture').content.querySelector('a');
     var pictureFragment = document.createDocumentFragment();
-    var filterDashboard = document.querySelector('.img-filters');
 
-    window.data.massivePhotos.forEach(function (count) {
+    data.forEach(function (count) {
       var element = templatePicture.cloneNode(true);
       element.querySelector('.picture__img').src = count.url;
       element.querySelector('.picture__likes').textContent = count.likes;
@@ -39,7 +44,6 @@
       pictureFragment.appendChild(element);
     });
     sectionPictures.appendChild(pictureFragment);
-    filterDashboard.classList.remove('img-filters--inactive');
   }
 
   function onErrorM() {
@@ -50,4 +54,7 @@
     messageError.addEventListener('click', onCloseErrorMessage);
     document.addEventListener('keydown', onCloseErrorMessage);
   }
+
+  window.xhr.load(URL_GET, 'GET', onComplete, onErrorM, {});
+
 })();

@@ -2,7 +2,7 @@
 
 (function () {
   var SERVER_STATUS_OK = 200;
-  var SERVER_TIMEOUT = 10000;
+  var SERVER_TIMEOUT = 0;
 
   function loadData(URL, method, onSuccess, onError, data) {
     var xhr = new XMLHttpRequest();
