@@ -12,6 +12,7 @@
 
   function includeComments(com) {
     var massComments = document.createDocumentFragment();
+
     for (var c = 0; c < com.length; c++) {
       var comment = document.createElement('li');
       comment.classList.add('social__comment');
@@ -59,9 +60,9 @@
   function viewComments() {
     var bigPicture = document.querySelector('.big-picture');
     var commentsListPicture = bigPicture.querySelector('.social__comments');
-
     var listComments = document.querySelector('.social__comments');
     var viewComment = listComments.querySelectorAll('.social__comment');
+
     if (viewComment.length < comments.length) {
       var count = viewComment.length;
       var items = comments.slice(count, count + showCounts);

@@ -31,23 +31,6 @@
     uploadFile.addEventListener('change', onOpenImgUploadForm);
   });
 
-  // function onErrorM() {
-  //   uploadForm.appendChild(templateError);
-  //
-  //   imgUploadForm.classList.add('hidden');
-  //   messageError.addEventListener('click', onCloseErrorMessage);
-  //   document.addEventListener('keydown', onCloseErrorMessage);
-  // }
-
-  // function onComplete() {
-  //   uploadForm.appendChild(templateSeccess);
-  //   onCloseImgUploadForm();
-  //   uploadForm.reset();
-  //
-  //   messageSuccess.addEventListener('click', onCloseCompleteMessage);
-  //   document.addEventListener('keydown', onCloseCompleteMessage);
-  // }
-
   function onSubmitUploadForm(evt) {
     evt.preventDefault();
     window.xhr.load(URL, 'POST', function onComplete() {
@@ -67,8 +50,8 @@
   }
 
   function onCloseCompleteMessage(evt) {
-    if (evt.target.matches('.success') || //
-        evt.target.matches('.success__button') || //
+    if (evt.target.closest('.success') ||
+        evt.target.closest('.success__button') ||
         evt.keyCode === ESC_KEYCODE) {
       templateSeccess.appendChild(messageSuccess);
       messageSuccess.removeEventListener('click', onCloseCompleteMessage);
@@ -77,8 +60,8 @@
   }
 
   function onCloseErrorMessage(evt) {
-    if (evt.target.matches('.error') || //
-        evt.target.matches('.error__button') || //
+    if (evt.target.closest('.error') ||
+        evt.target.closest('.error__button') ||
         evt.keyCode === ESC_KEYCODE) {
       imgUploadForm.classList.remove('hidden');
       templateError.appendChild(messageError);
@@ -237,16 +220,16 @@
   }
 
   function onKeydownCloseImgUploadForm(evt) {
-    if (evt.keyCode === ESC_KEYCODE) {
+    if (evt.keyCode === ESC_KEYCODE && !((evt.target.closest('input') || (evt.target.closest('textarea'))))) {
       onCloseImgUploadForm();
     }
   }
 
   function onChangeEffects(evt) {
-    if (evt.target.matches('.effects__radio')) {
+    if (evt.target.closest('.effects__radio')) {
       changeRadioEffectFilterValue(evt);
     }
-    if (evt.target.matches('.effect-level__value')) {
+    if (evt.target.closest('.effect-level__value')) {
       mainPic.style.filter = setFilterValue(evt.target.value, window.data.typeEffect);
     }
   }
