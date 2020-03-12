@@ -10,11 +10,18 @@
 
   var templateError = document.querySelector('#error').content;
   var messageError = templateError.querySelector('.error');
+  var main = document.querySelector('main');
+  var filterDashboard = document.querySelector('.img-filters');
+  var sectionPictures = document.querySelector('.pictures');
+  var pictureFragment = document.createDocumentFragment();
+
+  var templatePicture = document.querySelector('#picture').content.querySelector('a');
+  var templatePictureImg = templatePicture.querySelector('.picture__img');
+  var templatePictureLike = templatePicture.querySelector('.picture__likes');
+  var templatePictureComment = templatePicture.querySelector('.picture__comments');
 
   function onComplete(response) {
     window.data.massivePhotos = response;
-    var filterDashboard = document.querySelector('.img-filters');
-
     showDataPic(response);
     filterDashboard.classList.remove('img-filters--inactive');
   }
@@ -30,31 +37,22 @@
     }
   }
 
-
   function showDataPic(data) {
-    var sectionPictures = document.querySelector('.pictures');
-    var templatePicture = document.querySelector('#picture').content.querySelector('a');
-    var pictureFragment = document.createDocumentFragment();
-
     data.forEach(function (count) {
+      templatePictureImg.src = count.url;
+      templatePictureLike.textContent = count.likes;
+      templatePictureComment.textContent = count.comments.length;
       var element = templatePicture.cloneNode(true);
-      element.querySelector('.picture__img').src = count.url;
-      element.querySelector('.picture__likes').textContent = count.likes;
-      element.querySelector('.picture__comments').textContent = count.comments.length;
       pictureFragment.appendChild(element);
     });
     sectionPictures.appendChild(pictureFragment);
   }
 
-  function onErrorM() {
-    var main = document.querySelector('main');
-
+  function onErrorMassage() {
     main.appendChild(templateError);
-
     messageError.addEventListener('click', onCloseErrorMessage);
     document.addEventListener('keydown', onCloseErrorMessage);
   }
 
-  window.xhr.load(URL_GET, 'GET', onComplete, onErrorM, {});
-
+  window.xhr.load(URL_GET, 'GET', onComplete, onErrorMassage, {});
 })();
