@@ -1,6 +1,6 @@
 'use strict';
 (function () {
-  var ESC_KEYCODE = 27;
+  // var ESC_KEYCODE = 27;
   var Default = {
     MAX_VALUE: 100,
     MIN_VALUE: 25,
@@ -75,7 +75,7 @@
   function onCloseCompleteMessage(evt) {
     if (evt.target.closest('.success') ||
         evt.target.closest('.success__button') ||
-        evt.keyCode === ESC_KEYCODE) {
+        window.onPressEsc(evt.keyCode)) {
       templateSeccess.appendChild(messageSuccess);
       messageSuccess.removeEventListener('click', onCloseCompleteMessage);
       document.removeEventListener('keydown', onCloseCompleteMessage);
@@ -85,7 +85,7 @@
   function onCloseErrorMessage(evt) {
     if (evt.target.closest('.error') ||
         evt.target.closest('.error__button') ||
-        evt.keyCode === ESC_KEYCODE) {
+        window.onPressEsc(evt.keyCode)) {
       imgUploadForm.classList.remove('hidden');
       templateError.appendChild(messageError);
       messageError.removeEventListener('click', onCloseErrorMessage);
@@ -97,29 +97,23 @@
     var value = evt.target.value;
     var currentFilter = mainPic.getAttribute('class');
 
-    if (value === 'none' && mainPic.classList.length > 0) {
-      window.data.typeEffect = value;
-      if (currentFilter) {
-        mainPic.classList.remove(currentFilter);
-      }
+    window.data.typeEffect = value;
+    if (currentFilter) {
+      mainPic.classList.remove(currentFilter);
+    }
+    if (value === 'none') {
       mainPic.style.filter = Default.STYLE_FILTER;
-      effectLevelPin.style.left = Default.EFFECT_VALUE + '%';
-      effectLevelDepth.style.width = effectLevelLine.offsetWidth + 'px';
       effectBar.classList.add('hidden');
     } else {
-      window.data.typeEffect = value;
-      if (currentFilter) {
-        mainPic.classList.remove(currentFilter);
-      }
       if (effectBar.classList.contains('hidden')) {
         effectBar.classList.remove('hidden');
       }
       mainPic.classList.add('effects__preview--' + value);
       mainPic.style.filter = setFilterValue(Default.EFFECT_VALUE, value);
       effectValue.value = Default.EFFECT_VALUE;
-      effectLevelPin.style.left = Default.EFFECT_VALUE + '%';
-      effectLevelDepth.style.width = effectLevelLine.offsetWidth + 'px';
     }
+    effectLevelPin.style.left = Default.EFFECT_VALUE + '%';
+    effectLevelDepth.style.width = effectLevelLine.offsetWidth + 'px';
   }
 
   function onClickToggleImgUploadForm(toggleEvt) {
@@ -240,9 +234,8 @@
   }
 
   function onKeydownCloseImgUploadForm(evt) {
-    if (evt.keyCode === ESC_KEYCODE &&
-      !((evt.target.closest('input') ||
-      (evt.target.closest('textarea'))))) {
+    if (window.onPressEsc(evt.keyCode) &&
+      !(evt.target.closest('.text__hashtags') || evt.target.closest('.text__description'))) {
       onCloseImgUploadForm();
     }
   }

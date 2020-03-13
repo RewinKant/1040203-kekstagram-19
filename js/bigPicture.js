@@ -1,8 +1,8 @@
 'use strict';
 
 (function () {
-  var ESC_KEYCODE = 27;
-  var ENTER_KEYCODE = 27;
+  // var ESC_KEYCODE = 27;
+  var ENTER_KEYCODE = 13;
   var SHOW_COUNTS = 5;
   var AVATAR_SIZE = 35;
   var comments;
@@ -107,7 +107,7 @@
   }
 
   function onKeydownCloseBigPicture(evt) {
-    if (evt.keyCode === ESC_KEYCODE) {
+    if (window.onPressEsc(evt.keyCode)) {
       onCloseBigPicture();
     }
   }

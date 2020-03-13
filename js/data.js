@@ -7,6 +7,9 @@
     typeEffect: '',
     showPic: showDataPic
   };
+  window.onPressEsc = function (key) {
+    return key === ESC_KEYCODE;
+  };
 
   var templateError = document.querySelector('#error').content;
   var messageError = templateError.querySelector('.error');
@@ -29,7 +32,7 @@
   function onCloseErrorMessage(evt) {
     if (evt.target.matches('.error') ||
         evt.target.matches('.error__button') ||
-        evt.keyCode === ESC_KEYCODE) {
+        window.onPressEsc(evt.keyCode)) {
 
       templateError.appendChild(messageError);
       messageError.removeEventListener('click', onCloseErrorMessage);
